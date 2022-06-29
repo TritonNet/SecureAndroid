@@ -14,7 +14,7 @@ namespace secure_android.server.Controllers
         [HttpGet, Route("ping")]
         public IActionResult Ping()
         {
-            return Ok("OK");
+            return Ok("OK; It works");
         }
 
         [HttpPost, Route("")]

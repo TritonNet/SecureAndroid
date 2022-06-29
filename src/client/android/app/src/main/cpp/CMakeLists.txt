@@ -10,28 +10,37 @@ add_library(
 
         poc.cpp )
 
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -lcurl")
+
 include_directories(/curl/)
 include_directories(/openssl/)
 
-set(cmakeLibs_dir ${CMAKE_CURRENT_SOURCE_DIR}/../cmakeLibs/${ANDROID_ABI}/)
+target_include_directories(
+        ${projectName}
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/curl/${ANDROID_ABI}/include/curl/
+        ${CMAKE_CURRENT_SOURCE_DIR}/openssl/${ANDROID_ABI}/openssl/curl/
+)
 
-add_library(crypto STATIC IMPORTED)
-add_library(ssl STATIC IMPORTED)
-add_library(curl STATIC IMPORTED)
+set(cmakeLibs_dir ${CMAKE_CURRENT_SOURCE_DIR}/../cmakeLibs/${ANDROID_ABI})
 
-set_target_properties(crypto PROPERTIES IMPORTED_LOCATION ${cmakeLibs_dir}/libcrypto.a)
-set_target_properties(ssl PROPERTIES IMPORTED_LOCATION ${cmakeLibs_dir}/libssl.a)
-set_target_properties(curl PROPERTIES IMPORTED_LOCATION ${cmakeLibs_dir}/libcurl.a)
+add_library(lib_crypto STATIC IMPORTED)
+add_library(lib_ssl STATIC IMPORTED)
+add_library(lib_curl STATIC IMPORTED)
+
+set_target_properties(lib_crypto PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/openssl/${ANDROID_ABI}/lib/libcrypto.a)
+set_target_properties(lib_ssl PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/openssl/${ANDROID_ABI}/lib/libssl.a)
+set_target_properties(lib_curl PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/curl/${ANDROID_ABI}/lib/libcurl.a)
 
 find_library(log-lib log)
 find_package(ZLIB)
 
-
 target_link_libraries(
         ${projectName}
 
-        crypto
-        ssl
-        curl
+        lib_crypto
+        lib_ssl
+        lib_curl
+
         ZLIB::ZLIB
         ${log-lib})
